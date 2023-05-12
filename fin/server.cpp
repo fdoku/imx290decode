@@ -62,6 +62,11 @@ int main(int argc, char** argv)
     localAddr.sin_addr.s_addr = INADDR_ANY;
     localAddr.sin_port = htons( port );
 
+    const int en = 1;
+
+    if (setsockopt(localSocket, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(int)) < 0)
+        perror("setsockopt(SO_REUSEADDR) failed");
+
     if( bind(localSocket,(struct sockaddr *)&localAddr , sizeof(localAddr)) < 0) {
          perror("Can't bind() socket");
          exit(1);
@@ -130,7 +135,8 @@ void *display(void *ptr){
             
                 //do video processing here 
                 //cvtColor(img, imgGray, CV_BGR2GRAY);
-
+                
+                //cv::cvtColor(img, img, cv::COLOR_YUV2BGR_YUY2);
                 //send processed image
                 if ((bytes = send(socket, img.data, imgSize, 0)) < 0){
                      std::cerr << "bytes = " << bytes << std::endl;
